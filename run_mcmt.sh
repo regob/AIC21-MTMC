@@ -15,7 +15,7 @@ cd ../../reid/
 
 #### MOT. ####
 cd ../tracker/MOTBaseline
-sh run_aic.sh ${MCMT_CONFIG_FILE}
+bash run_aic.sh ${MCMT_CONFIG_FILE}
 wait
 #### Get results. ####
 cd ../../reid/reid-matching/tools
