@@ -7,22 +7,24 @@ import sys
 sys.path.append('../../../')
 from config import cfg
 
-def parse_pt(pt_file,zones):
+
+def parse_pt(pt_file, zones):
     if not os.path.isfile(pt_file):
         return dict()
-    with open(pt_file,'rb') as f:
+    with open(pt_file, 'rb') as f:
         lines = pickle.load(f)
     mot_list = dict()
     for line in lines:
         fid = int(lines[line]['frame'][3:])
         tid = lines[line]['id']
-        bbox = list(map(lambda x:int(float(x)), lines[line]['bbox']))
+        bbox = list(map(lambda x: int(float(x)), lines[line]['bbox']))
         if tid not in mot_list:
             mot_list[tid] = dict()
         out_dict = lines[line]
         out_dict['zone'] = zones.get_zone(bbox)
         mot_list[tid][fid] = out_dict
     return mot_list
+
 
 def parse_bias(timestamp_dir, scene_name):
     cid_bias = dict()
