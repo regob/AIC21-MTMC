@@ -5,6 +5,7 @@ from config import cfg
 import cv2
 from tqdm import tqdm
 
+
 def preprocess(src_root, dst_root):
     if not os.path.isdir(src_root):
         print("[Err]: invalid source root")
@@ -14,20 +15,20 @@ def preprocess(src_root, dst_root):
         os.makedirs(dst_root)
         print("{} made".format(dst_root))
 
-    sec_dir_list = ['test']
-    dst_dir_list = [ dst_root + '/images/' + i for i in sec_dir_list]
+    sec_dir_list = ['validation']
+    dst_dir_list = [dst_root + '/images/' + i for i in sec_dir_list]
     for i in dst_dir_list:
         if not os.path.isdir(i):
             os.makedirs(i)
 
-    for i,x in enumerate(sec_dir_list):
+    for i, x in enumerate(sec_dir_list):
         x_path = src_root + '/' + x
         if os.path.isdir(x_path):
             for y in os.listdir(x_path):
                 if y.startswith('S'):
-                    y_path = os.path.join(x_path,y)
+                    y_path = os.path.join(x_path, y)
                     for z in os.listdir(y_path):
-                        z_path = os.path.join(y_path,z)
+                        z_path = os.path.join(y_path, z)
                         if z.startswith('c'):
                             video_path = os.path.join(z_path,'vdo.avi')
                             roi_path = os.path.join(z_path, 'roi.jpg')
@@ -58,8 +59,8 @@ def draw_ignore_regions(img, region):
         print('[Err]: Input image is none!')
         return -1
     img = img*(region>0)
-
     return img
+
 if __name__ == '__main__':
     cfg.merge_from_file(f'../config/{sys.argv[1]}')
     cfg.freeze()
