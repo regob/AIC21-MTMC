@@ -30,11 +30,12 @@ def preprocess(src_root, dst_root):
                     for z in os.listdir(y_path):
                         z_path = os.path.join(y_path, z)
                         if z.startswith('c'):
-                            video_path = os.path.join(z_path,'vdo.avi')
+                            video_path = os.path.join(z_path, 'vdo.avi')
                             roi_path = os.path.join(z_path, 'roi.jpg')
                             ignor_region = cv2.imread(roi_path)
 
-                            dst_img1_dir = os.path.join(dst_dir_list[i],y,z,'img1')
+                            dst_img1_dir = os.path.join(
+                                dst_dir_list[i], y, z, 'img1')
                             if not os.path.isdir(dst_img1_dir):
                                 os.makedirs(dst_img1_dir)
 
@@ -45,7 +46,7 @@ def preprocess(src_root, dst_root):
                             while frame_current<frame_count-1:
                                 frame_current = int(video.get(cv2.CAP_PROP_POS_FRAMES))
                                 _, frame = video.read()
-                                dst_f =  'img{:06d}.jpg'.format(frame_current)
+                                dst_f = 'img{:06d}.jpg'.format(frame_current)
                                 dst_f_path = os.path.join(dst_img1_dir , dst_f)
                                 if not os.path.isfile(dst_f_path):
                                     frame = draw_ignore_regions(frame, ignor_region)
