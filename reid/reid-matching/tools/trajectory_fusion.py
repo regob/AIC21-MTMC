@@ -10,8 +10,10 @@ from config import cfg
 scene_name = ['S02']
 save_dir = './exp/viz/test/S02/trajectory/'
 
+IGNORE_ZONES = True
 
-def parse_pt(pt_file, zones):
+
+def parse_pt(pt_file, zones=None):
     if not os.path.isfile(pt_file):
         return dict()
     with open(pt_file, 'rb') as f:
@@ -24,7 +26,8 @@ def parse_pt(pt_file, zones):
         if tid not in mot_list:
             mot_list[tid] = dict()
         out_dict = lines[line]
-        out_dict['zone'] = zones.get_zone(bbox)
+        if not IGNORE_ZONES:
+            out_dict['zone'] = zones.get_zone(bbox)
         mot_list[tid][fid] = out_dict
     return mot_list
 
@@ -62,7 +65,6 @@ if __name__ == '__main__':
     cam_paths = os.listdir(data_dir)
     cam_paths = list(filter(lambda x: 'c' in x, cam_paths))
     cam_paths.sort()
-    zones = zone()
 
     for cam_path in cam_paths:
         print('processing {}...'.format(cam_path))
@@ -73,18 +75,22 @@ if __name__ == '__main__':
         new_mot_path = opj(data_dir, cam_path,
                            '{}_mot_feat_break.pkl'.format(cam_path))
         print(new_mot_path)
+
+        zones = zone()
         zones.set_cam(cid)
+
         mot_list = parse_pt(mot_path, zones)
-        mot_list = zones.break_mot(mot_list, cid)
-        # mot_list = zones.comb_mot(mot_list, cid)
-        mot_list = zones.filter_mot(mot_list, cid)  # filter by zone
-        mot_list = zones.filter_bbox(mot_list, cid)  # filter bbox
+        # mot_list = zones.break_mot(mot_list, cid)
+        ## mot_list = zones.comb_mot(mot_list, cid)
+        # mot_list = zones.filter_mot(mot_list, cid)  # filter by zone
+        # mot_list = zones.filter_bbox(mot_list, cid)  # filter bbox
         out_new_mot(mot_list, new_mot_path)
 
         tid_data = dict()
         for tid in mot_list:
-            if cid not in [41, 43, 46, 42, 44, 45]:
-                break
+            # if cid not in [41, 43, 46, 42, 44, 45]:
+            #   break
+
             tracklet = mot_list[tid]
             if len(tracklet) <= 1:
                 continue
@@ -93,7 +99,7 @@ if __name__ == '__main__':
             frame_list.sort()
             # if tid==11 and cid==44:
             #     print(tid)
-            zone_list = [tracklet[f]['zone'] for f in frame_list]
+            zone_list = [] if IGNORE_ZONES else [tracklet[f]['zone'] for f in frame_list]
             feature_list = [tracklet[f]['feat'] for f in frame_list if (
                 tracklet[f]['bbox'][3] - tracklet[f]['bbox'][1]) * (tracklet[f]['bbox'][2] - tracklet[f]['bbox'][0]) > 2000]
             if len(feature_list) < 2:
@@ -113,5 +119,5 @@ if __name__ == '__main__':
                 'io_time': io_time
             }
 
-        pickle.dump(tid_data,f_w)
+        pickle.dump(tid_data, f_w)
         f_w.close()
