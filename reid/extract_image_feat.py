@@ -36,8 +36,8 @@ class ReidFeature():
         self.model.eval()
         mean = [0.485, 0.456, 0.406]
         std = [0.229, 0.224, 0.225]
-        self.val_transforms = T.Compose([T.Resize(self.reid_cfg.INPUT.SIZE_TEST, interpolation=3),\
-                              T.ToTensor(), T.Normalize(mean=mean, std=std)])
+        self.val_transforms = T.Compose([T.Resize(self.reid_cfg.INPUT.SIZE_TEST, interpolation=3),
+                                         T.ToTensor(), T.Normalize(mean=mean, std=std)])
 
     def extract(self, img_path_list):
         """Extract image feature with given image path.
@@ -54,11 +54,13 @@ class ReidFeature():
         with torch.no_grad():
             img = img.to('cuda')
             flip_feats = False
-            if self.reid_cfg.TEST.FLIP_FEATS == 'yes': flip_feats = True
+            if self.reid_cfg.TEST.FLIP_FEATS == 'yes':
+                flip_feats = True
             if flip_feats:
                 for i in range(2):
                     if i == 1:
-                        inv_idx = torch.arange(img.size(3) - 1, -1, -1).long().cuda()
+                        inv_idx = torch.arange(
+                            img.size(3) - 1, -1, -1).long().cuda()
                         img = img.index_select(3, inv_idx)
                         feat1 = self.model(img)
                     else:
@@ -85,6 +87,9 @@ def process_input_by_worker_process(image_path_list):
     feat_dict = {}
     for index, image_path in enumerate(image_path_list):
         feat_dict[image_path] = reid_feat_numpy[index]
+
+    # record progress
+    open("/tmp/reid_progress/{}".format(str(time.time())), "w").close()
     return feat_dict
 
 
@@ -94,11 +99,16 @@ def load_all_data(data_path):
     image_list = []
     for cam in os.listdir(data_path):
         image_dir = os.path.join(data_path, cam, 'dets')
-        cam_image_list = glob(image_dir+'/*.png')
+        cam_image_list = glob(image_dir + '/*.png')
         cam_image_list = sorted(cam_image_list)
         print(f'{len(cam_image_list)} images for {cam}')
         image_list += cam_image_list
+
     print(f'{len(image_list)} images in total')
+    logf = open("/tmp/reid_progress/total_cnt.txt", "w")
+    logf.write(f'{len(image_list)} images in total\n')
+    logf.close()
+    
     return image_list
 
 
@@ -121,7 +131,8 @@ def save_feature(output_path, data_path, pool_output):
         if not os.path.isdir(os.path.join(output_path, cam)):
             os.makedirs(os.path.join(output_path, cam))
         feat_pkl_file = os.path.join(output_path, cam, f'{cam}_dets_feat.pkl')
-        pickle.dump(feat_dic, open(feat_pkl_file, 'wb'), pickle.HIGHEST_PROTOCOL)
+        pickle.dump(feat_dic, open(feat_pkl_file, 'wb'),
+                    pickle.HIGHEST_PROTOCOL)
         print('save pickle in %s' % feat_pkl_file)
 
 
@@ -137,7 +148,8 @@ def extract_image_feat(_cfg):
     for _ in range(num_process):
         gpu_ids.put(next(gpu_id_cycle_iterator))
 
-    process_pool = Pool(processes=num_process, initializer=init_worker, initargs=(gpu_ids, _cfg, ))
+    process_pool = Pool(processes=num_process,
+                        initializer=init_worker, initargs=(gpu_ids, _cfg, ))
     start_time = time.time()
     pool_output = list(tqdm.tqdm(process_pool.imap_unordered(\
                                  process_input_by_worker_process, chunk_list),
@@ -164,6 +176,7 @@ def debug_reid_feat(_cfg):
 
 def main():
     """Main method."""
+    os.mkdir("/tmp/reid_progress")
 
     cfg.merge_from_file(f'../config/{sys.argv[1]}')
     cfg.freeze()
