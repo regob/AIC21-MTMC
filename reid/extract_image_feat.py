@@ -87,9 +87,6 @@ def process_input_by_worker_process(image_path_list):
     feat_dict = {}
     for index, image_path in enumerate(image_path_list):
         feat_dict[image_path] = reid_feat_numpy[index]
-
-    # record progress
-    open("/tmp/reid_progress/{}".format(str(time.time())), "w").close()
     return feat_dict
 
 
@@ -105,10 +102,6 @@ def load_all_data(data_path):
         image_list += cam_image_list
 
     print(f'{len(image_list)} images in total')
-    logf = open("/tmp/reid_progress/total_cnt.txt", "w")
-    logf.write(f'{len(image_list)} images in total\n')
-    logf.close()
-
     return image_list
 
 
@@ -177,9 +170,6 @@ def debug_reid_feat(_cfg):
 
 def main():
     """Main method."""
-    
-    if not os.path.exists("/tmp/reid_progress"):
-        os.mkdir("/tmp/reid_progress")
 
     cfg.merge_from_file(f'../config/{sys.argv[1]}')
     cfg.freeze()
