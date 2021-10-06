@@ -5,12 +5,15 @@ import sys
 sys.path.append('../../../')
 from config import cfg
 
-def get_sim_matrix(_cfg,cid_tid_dict,cid_tids):
+
+def get_sim_matrix(_cfg, cid_tid_dict, cid_tids):
     count = len(cid_tids)
     print('count: ', count)
 
-    q_arr = np.array([cid_tid_dict[cid_tids[i]]['mean_feat'] for i in range(count)])
-    g_arr = np.array([cid_tid_dict[cid_tids[i]]['mean_feat'] for i in range(count)])
+    q_arr = np.array([cid_tid_dict[cid_tids[i]]['mean_feat']
+                      for i in range(count)])
+    g_arr = np.array([cid_tid_dict[cid_tids[i]]['mean_feat']
+                      for i in range(count)])
     q_arr = normalize(q_arr, axis=1)
     g_arr = normalize(g_arr, axis=1)
     # sim_matrix = np.matmul(q_arr, g_arr.T)
@@ -32,9 +35,11 @@ def get_sim_matrix(_cfg,cid_tid_dict,cid_tids):
     np.fill_diagonal(sim_matrix, 0)
     return sim_matrix
 
+
 def normalize(nparray, axis=0):
     nparray = preprocessing.normalize(nparray, norm='l2', axis=axis)
     return nparray
+
 
 def get_match(cluster_labels):
     cluster_dict = dict()
@@ -48,7 +53,8 @@ def get_match(cluster_labels):
         cluster.append(cluster_dict[idx])
     return cluster
 
-def get_cid_tid(cluster_labels,cid_tids):
+
+def get_cid_tid(cluster_labels, cid_tids):
     cluster = list()
     for labels in cluster_labels:
         cid_tid_list = list()
@@ -135,9 +141,13 @@ def get_labels(_cfg, cid_tid_dict, cid_tids, score_thr):
 if __name__ == '__main__':
     cfg.merge_from_file(f'../../../config/{sys.argv[1]}')
     cfg.freeze()
-    scene_name = ['S06']
-    scene_cluster = [[41, 42, 43, 44, 45, 46]]
-    fea_dir = './exp/viz/test/S06/trajectory/'
+    
+    #scene_name = ['S06']
+    #scene_cluster = [[41, 42, 43, 44, 45, 46]]
+    #fea_dir = './exp/viz/test/S06/trajectory/'
+    scene_name = ['S02']
+    scene_cluster = [[6, 7, 8, 9]]
+    fea_dir = './exp/viz/test/S02/trajectory/'
     cid_tid_dict = dict()
 
     for pkl_path in os.listdir(fea_dir):
