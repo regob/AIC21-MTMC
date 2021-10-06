@@ -41,7 +41,8 @@ def preprocess(src_root, dst_root):
 
                             # 生成图片帧
                             video = cv2.VideoCapture(video_path)
-                            frame_count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+                            frame_count = int(
+                                video.get(cv2.CAP_PROP_FRAME_COUNT))
                             frame_current = 0
                             while frame_current<frame_count-1:
                                 frame_current = int(video.get(cv2.CAP_PROP_POS_FRAMES))
@@ -51,9 +52,9 @@ def preprocess(src_root, dst_root):
                                 if not os.path.isfile(dst_f_path):
                                     frame = draw_ignore_regions(frame, ignor_region)
                                     cv2.imwrite(dst_f_path, frame)
-                                    print('{}:{} generated to {}'.format(z,dst_f, dst_img1_dir))
+                                    #print('{}:{} generated to {}'.format(z,dst_f, dst_img1_dir))
                                 else:
-                                    print('{}:{} already exists.'.format(z,dst_f))
+                                    #print('{}:{} already exists.'.format(z,dst_f))
 
 def draw_ignore_regions(img, region):
     if img is None:
