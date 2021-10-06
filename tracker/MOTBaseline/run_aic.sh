@@ -1,7 +1,6 @@
-
 cd src
-seqs=(c041 c042 c043 c044 c045 c046)
-# seqs=(c042)
+# seqs=(c041 c042 c043 c044 c045 c046)
+seqs=(c006 c007 c008 c009)
 
 TrackOneSeq(){
     seq=$1
@@ -24,6 +23,9 @@ TrackOneSeq(){
 
 for seq in ${seqs[@]}
 do 
-    TrackOneSeq ${seq} $1 &
+    # TrackOneSeq ${seq} $1 &
+    
+    # run in foreground on one core
+    TrackOneSeq ${seq} $1
 done
 wait
