@@ -13,11 +13,16 @@ from config import cfg
 def merge_feat(_cfg):
     """Save feature."""
 
-    # NOTE: modify the ensemble list here
-    ensemble_list = ['detect_reid1', 'detect_reid2', 'detect_reid3']
     all_feat_dir = _cfg.DATA_DIR.split('detect')[0]
 
-    for cam in ['c041', 'c042', 'c043', 'c044', 'c045', 'c046']:
+    # NOTE: modify the ensemble list here
+    # ensemble_list = ['detect_reid1', 'detect_reid2', 'detect_reid3']
+    ensemble_list = ["detect_reid2"]
+
+    # cams = ['c041', 'c042', 'c043', 'c044', 'c045', 'c046']
+    cams = ['c006', 'c007', 'c008', 'c009']
+
+    for cam in cams:
         feat_dic_list = []
         for feat_mode in ensemble_list:
             feat_pkl_file = os.path.join(all_feat_dir, feat_mode, cam,
